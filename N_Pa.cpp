@@ -6,7 +6,10 @@
 using namespace std;
 
 int m0[] = {1, 0, 0};
-pair< int, string > place[] = {make_pair(m0[0], "free"), make_pair(m0[1], "busy"), make_pair(m0[2], "docu")};
+pair< int, string > place[] = {make_pair(m0[0], "wait"), make_pair(m0[1], "inside"), make_pair(m0[2], "done")};
+#define WAIT 0
+#define INSIDE 1
+#define DONE 2
 
 class Transition {
     set<int> in;
@@ -42,25 +45,26 @@ void make_transition() {
     {
         set<int> in;
         set<int> out;
-        in.insert(0);
-        out.insert(1);
+        in.insert(WAIT);
+        out.insert(INSIDE);
         transition["start"] = Transition(in, out);
     }
 
     {
         set<int> in;
         set<int> out;
-        in.insert(1);
-        out.insert(2);
-        transition["change"] = Transition(in, out);
-    }
-
-    {
-        set<int> in;
-        set<int> out;
-        in.insert(2);
-        out.insert(0);
+        in.insert(INSIDE);
+        out.insert(DONE);
         transition["end"] = Transition(in, out);
+    }
+}
+
+void get_initial_marking() {
+    int ind = 0;
+    for (auto &p : place) {
+        cout << "Initial marking of state " << p.second << ": ";
+        cin >> p.first;
+        m0[ind++] = p.first;
     }
 }
 
@@ -115,6 +119,7 @@ void displayM() {
 
 int main() {
     make_transition();
+    get_initial_marking();
     while (true) {
         system("cls");
         cout << "N  = {P, T, F, M0}" << endl;
@@ -123,10 +128,12 @@ int main() {
         displayM0();
         displayM();
 
+        cout << "Type here the transition you want to fire: ";
         string x; cin >> x;
         Transition &temp = transition[x];
         if (!temp.available()) {
             cout << "Transition not available" << endl;
+            system("pause");
             return 0;
         }
         temp.fire();
