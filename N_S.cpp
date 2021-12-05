@@ -142,7 +142,7 @@ int main() {
         if (!temp.available()) {
             cout << "Transition not available" << endl;
             system("pause");
-            return 0;
+            continue;
         }
         temp.fire();
     }
